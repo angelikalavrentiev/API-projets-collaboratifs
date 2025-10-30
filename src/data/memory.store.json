@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Neptune CRM Revamp",
+    "description": "Refonte front + API",
+    "organizer": "Alice Smith",
+    "specFile": "dummy.pdf"
+  },
+  {
+    "id": 2,
+    "name": "Atlas Mobile v2",
+    "description": "Refonte UX, offline-first",
+    "organizer": "Marco Polo",
+    "specFile": "dummy.pdf"
+  },
+  {
+    "id": 3,
+    "name": "test",
+    "description": "",
+    "organizer": "sonia",
+    "specFile": "1761839390180-dummy.pdf"
+  }
+]
