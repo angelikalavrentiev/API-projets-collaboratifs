@@ -1,10 +1,9 @@
 // On importe fs pour la gestion des fichiers 
 const fs = require("fs");
 const path = require("path");
-const EventEmitter = require("events");
 
-const bookEmitter = new EventEmitter(); // EventEmitter si tu veux gérer des events plus tard
-const data_file = path.join(__dirname, '..', 'data', 'memory.store.json'); // J'ai changé .js en .json pour persistance
+
+const data_file = path.join(__dirname, '..', 'data', 'memory.store.json'); 
 
 // On simule une base de données avec un tableau en mémoire
 // On utilise let car on va modifier ce tableau dans les opérations CRUD 
@@ -29,8 +28,8 @@ try {
     console.log("Le fichier memory.store.json est introuvable, initialisation des projets par défaut");
 
     projects = [
-        {id: 1, name: "Neptune CRM Revamp", description: "Refonte front + API", organizer: "Alice Smith", specFile: "dummy.pdf"},
-        {id: 2, name: "Atlas Mobile v2", description: "Refonte UX, offline-first", organizer: "Marco Polo", specFile: "dummy.pdf"}
+        {id: 1, name: "Neptune CRM Revamp", description: "Refonte front + API", organizer: "Alice Smith", specFile: "neptune-crm-spec.pdf"},
+        {id: 2, name: "Atlas Mobile v2", description: "Refonte UX, offline-first", organizer: "Marco Polo", specFile: "atlas-mobile-spec.pdf"}
     ];
 
     // On tente d'écrire le fichier initial
@@ -59,6 +58,50 @@ const getProjectById = (id) => {
     return projects.find(project => project.id === idNumber);
 };
 
+// Lister les projets avec filtres et pagination
+const getProjectsWithPagination = (req, res) => {
+
+  try {
+    // Récupération des paramètres de requête depuis l'URL
+    // Exemple d'URL comme dans la consigne: /projects?q=crm&role=Developer&page=2&size=10
+    const { q, role, page = 1, size = 10 } = req.query;
+    let projects = getAllProjects(); // récupérer tous les projets
+
+    // ON filtre par nom en minuscule
+    if (q) {
+      const qLower = q.toLowerCase();
+      projects = projects.filter(p => p.name.toLowerCase().includes(qLower));
+    }
+
+    // On filtre par rôle d'un membre en minuscule aussi
+    if (role) {
+      const roleLower = role.toLowerCase();
+      projects = projects.filter(p =>
+        p.members?.some(m => m.role.toLowerCase() === roleLower)
+      );
+    }
+
+    // --- Pagination ---
+    // Calculer les indices pour slice()
+    const total = projects.length;
+    const start = (page - 1) * size; // Index du premier projet à afficher
+    const end = start + Number(size); // Index du dernier 
+    // Slice prendra les éléments de startIndex inclus à endIndex exclus 
+    const projectData = projects.slice(start, end).map(p => ({
+      id: p.id,
+      name: p.name,
+      organizer: p.organizer,
+      membersCount: p.members?.length || 0
+    }));
+
+    // --- Retour JSON ---
+    res.status(200).json({ projectData, page: Number(page), size: Number(size), total });
+  } catch (err) {
+    res.status(500).json({ message: "Erreur interne serveur" });
+  }
+};
+
+
 // Ajouter un projet
 const addProject = (projectData) => {
     // Validation des données
@@ -73,13 +116,13 @@ const addProject = (projectData) => {
         name: String(projectData.name).trim(), 
         description: String(projectData.description || ""), 
         organizer: String(projectData.organizer).trim(), 
-        specFile: String(projectData.specFile) 
+        specFile: String(projectData.specFile),
+        members: []
     };
 
     // Vérifie si le projet existe déjà
     const exists = projects.some(p => 
-        p.name.toLowerCase() === newProject.name.toLowerCase() && 
-        p.organizer.toLowerCase() === newProject.organizer.toLowerCase()
+        p.name.toLowerCase() === newProject.name.toLowerCase()
     );
 
     if (exists) throw new Error("Ce projet existe déjà !");
@@ -107,17 +150,16 @@ const updateProject = (id, projectData) => {
         name: projectData.name ? String(projectData.name).trim() : projects[i].name,
         description: projectData.description ? String(projectData.description) : projects[i].description,
         organizer: projectData.organizer ? String(projectData.organizer).trim() : projects[i].organizer,
-        specFile: projectData.specFile ? String(projectData.specFile) : projects[i].specFile
+        specFile: projectData.specFile ? String(projectData.specFile) : projects[i].specFile,
+        members: []
     };
 
     // Vérifie si un autre projet avec le même nom & organisateur existe 
     const updatedName = updatedProject.name.trim().toLowerCase();
-    const updatedOrganizer = updatedProject.organizer.trim().toLowerCase();
 
     const exists = projects.some((p, index) => {
         if (index === i) return false; // ignore le projet actuel
-        return p.name.trim().toLowerCase() === updatedName &&
-               p.organizer.trim().toLowerCase() === updatedOrganizer;
+        return p.name.trim().toLowerCase() === updatedName;
     });
 
     if (exists) throw new Error("Ce projet existe déjà !");
@@ -149,4 +191,4 @@ const deleteProject = (id) => {
 };
 
 // Export des fonctions
-module.exports = { getAllProjects, getProjectById, addProject, updateProject, deleteProject };
+module.exports = { getAllProjects, getProjectById, getProjectsWithPagination,  addProject, updateProject, deleteProject };

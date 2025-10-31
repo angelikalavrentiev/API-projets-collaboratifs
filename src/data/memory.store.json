@@ -17,7 +17,15 @@
     "id": 3,
     "name": "test",
     "description": "",
-    "organizer": "sonia",
-    "specFile": "1761839390180-dummy.pdf"
+    "organizer": "soniita",
+    "specFile": "test-spec.pdf"
+  },
+  {
+    "id": 4,
+    "name": "test project",
+    "description": "",
+    "organizer": "soniita",
+    "specFile": "test-project-spec.pdf",
+    "members": []
   }
 ]

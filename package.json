@@ -1,36 +1,20 @@
 {
-<<<<<<< HEAD
   "name": "tp-grp",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "dev": "nodemon app.js"
-=======
-  "name": "",
-  "version": "1.0.0",
-  "description": "",
   "main": "src/app.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "seed": "node src/seed/courses.seed.js"
->>>>>>> master
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-<<<<<<< HEAD
-  "type": "commonjs",
-  "dependencies": {
-    "express": "^5.1.0",
-=======
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "express": "^4.21.2",
->>>>>>> master
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
