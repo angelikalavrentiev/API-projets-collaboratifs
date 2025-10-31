@@ -4,29 +4,64 @@
     "name": "Neptune CRM Revamp",
     "description": "Refonte front + API",
     "organizer": "Alice Smith",
-    "specFile": "neptune-crm-spec.pdf"
+    "specFile": "neptune-crm-spec.pdf",
+    "members": [
+      {
+        "id": 101,
+        "name": "John Doe",
+        "role": "Developer",
+        "projectId": 1
+      },
+      {
+        "id": 102,
+        "name": "Nadia Ben",
+        "role": "QA",
+        "projectId": 1
+      },
+      {
+        "id": 103,
+        "name": "Léo Tran",
+        "role": "ProductOwner",
+        "projectId": 1
+      }
+    ]
   },
   {
     "id": 2,
     "name": "Atlas Mobile v2",
     "description": "Refonte UX, offline-first",
     "organizer": "Marco Polo",
-    "specFile": "atlas-mobile-spec.pdf"
+    "specFile": "atlas-mobile-spec.pdf",
+    "members": [
+      {
+        "id": 104,
+        "name": "Sara Kim",
+        "role": "Designer",
+        "projectId": 2
+      }
+    ]
   },
   {
     "id": 3,
     "name": "my project",
     "description": "",
-    "organizer": "John Doe",
+    "organizer": "Alice Smith",
     "specFile": "my-project-spec.pdf",
     "members": []
   },
   {
     "id": 4,
-    "name": "my project is mine",
+    "name": "my project second",
     "description": "",
-    "organizer": "Alice Smith",
+    "organizer": "John Doe",
     "specFile": "my-project-spec.pdf",
-    "members": []
+    "members": [
+      {
+        "id": 105,
+        "name": "Test User 2",
+        "role": "ProductOwner",
+        "projectId": 4
+      }
+    ]
   }
 ]

@@ -28,8 +28,8 @@ try {
     console.log("Le fichier memory.store.json est introuvable, initialisation des projets par défaut");
 
     projects = [
-        {id: 1, name: "Neptune CRM Revamp", description: "Refonte front + API", organizer: "Alice Smith", specFile: "neptune-crm-spec.pdf"},
-        {id: 2, name: "Atlas Mobile v2", description: "Refonte UX, offline-first", organizer: "Marco Polo", specFile: "atlas-mobile-spec.pdf"}
+        {id: 1, name: "Neptune CRM Revamp", description: "Refonte front + API", organizer: "Alice Smith", specFile: "neptune-crm-spec.pdf", members: [] },
+        {id: 2, name: "Atlas Mobile v2", description: "Refonte UX, offline-first", organizer: "Marco Polo", specFile: "atlas-mobile-spec.pdf", members: []}
     ];
 
     // On tente d'écrire le fichier initial
