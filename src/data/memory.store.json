@@ -4,28 +4,29 @@
     "name": "Neptune CRM Revamp",
     "description": "Refonte front + API",
     "organizer": "Alice Smith",
-    "specFile": "dummy.pdf"
+    "specFile": "neptune-crm-spec.pdf"
   },
   {
     "id": 2,
     "name": "Atlas Mobile v2",
     "description": "Refonte UX, offline-first",
     "organizer": "Marco Polo",
-    "specFile": "dummy.pdf"
+    "specFile": "atlas-mobile-spec.pdf"
   },
   {
     "id": 3,
-    "name": "test",
+    "name": "my project",
     "description": "",
-    "organizer": "soniita",
-    "specFile": "test-spec.pdf"
+    "organizer": "John Doe",
+    "specFile": "my-project-spec.pdf",
+    "members": []
   },
   {
     "id": 4,
-    "name": "test project",
+    "name": "my project is mine",
     "description": "",
-    "organizer": "soniita",
-    "specFile": "test-project-spec.pdf",
+    "organizer": "Alice Smith",
+    "specFile": "my-project-spec.pdf",
     "members": []
   }
 ]

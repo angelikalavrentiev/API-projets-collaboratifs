@@ -12,13 +12,13 @@ router.get("/",isAuthenticated, getProjects);
 router.get("/:id",isAuthenticated, getProject);           
 
 // Créer un projet (uniquement pour organizer authentifié)
-router.post("/",isAuthenticated, uploadSingleFileMiddleware, renameUploadedSpecFile, createProjet);
+router.post("/",isAuthenticated,isOrganizer, uploadSingleFileMiddleware, renameUploadedSpecFile, createProjet);
 
 
 // Modifier un projet (uniquement pour l’organizer du projet)
-router.put("/:id",isAuthenticated, isOrganizer, uploadSingleFileMiddleware, renameUploadedSpecFile, editProject); 
+router.put("/:id",isAuthenticated, uploadSingleFileMiddleware, renameUploadedSpecFile, editProject); 
 
 // Supprimer un projet (uniquement pour l’organizer du projet)
-router.delete("/:id",isAuthenticated, isOrganizer, removeProject);     
+router.delete("/:id",isAuthenticated, removeProject);     
 
 module.exports = router;

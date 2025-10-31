@@ -3,13 +3,11 @@ const { generateToken, verifyJwtToken } = require("../utils/jwt");
 
 exports.login = async (req, res) => {
 
-    const { name } = req.body;
-
-    if (!name) {
-        return res.status(400).json({ message: "Le champ 'name' est requis" });
+    const { name, role } = req.body; // role = "Organizer" ou "Member"
+    if (!name || !role) {
+        return res.status(400).json({ message: "Le champ 'name' et 'role' sont requis" });
     }
-
-    const token = generateToken({ name }, "1h"); 
+    const token = generateToken({ name, role }, "1h");
 
     res.cookie("access_token", token, {
         httpOnly: true,
@@ -18,7 +16,7 @@ exports.login = async (req, res) => {
         path: "/"
     })
 
-    res.status(200).json({ message: "Vous êtes bien authentifié", token, name })
+    res.status(200).json({ message: "Vous êtes bien authentifié", token, name, role })
 
 }
 

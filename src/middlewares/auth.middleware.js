@@ -8,7 +8,7 @@ exports.isAuthenticated = async (req, res, next) => {
         return res.status(401).json({ message: "Vous n'êtes pas authentifié" });
     }
 
-    const [scheme, token] = authHeader.split(" ");
+    const [scheme, token] = authorization.split(" "); // On mets autorisation vu qu'on a déclaré ce nom en haut
 
     if (scheme !== "Bearer" || !token) {
         return res.status(401).json({ message: "Format du header invalide" });
@@ -20,7 +20,8 @@ exports.isAuthenticated = async (req, res, next) => {
         return res.status(401).json({ message: "Token invalide ou expiré" });
     }
 
-    req.status = decoded;
+    // Modifs ici 
+    req.user = decoded;
     
     next();
 }

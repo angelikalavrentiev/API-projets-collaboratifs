@@ -49,6 +49,7 @@ const createProjet = (req, res) => {
 // Modifier un projet
 const editProject = (req, res) => {
     try {
+        const project = getProjectById(req.params.id);
         const { name, description, organizer } = req.body;
         
         // On récupère le fichier uploadé si présent
@@ -57,6 +58,11 @@ const editProject = (req, res) => {
         // On ne modifie specFile que si un fichier a été uploadé
         let specFile;
         if (uploadedFile) specFile = uploadedFile.filename; 
+
+        // Vérification de l'organizer
+        if (req.user.role === "Organizer" && req.user.name !== project.organizer) {
+            return res.status(403).json({ message: "Accès refusé : vous n'êtes pas l'organizer de ce projet" });
+        }
     
         // Mise à jour via le service
         const updatedData = updateProject(req.params.id, { name, description, organizer, specFile });
@@ -69,11 +75,18 @@ const editProject = (req, res) => {
 
 // Supprimer un projet
 const removeProject = (req, res) => {
-    const deletedProject = deleteProject(req.params.id);
+    const project = getProjectById(req.params.id);
+    if (!project) return res.status(404).json({ message: "Projet non trouvé" });
 
-    if (!deletedProject) return res.status(404).json({ message: "Projet non trouvé" });
+    // Seul l'organizer spécifique du projet peut supprimer
+    if (req.user.name !== project.organizer) {
+        return res.status(403).json({ message: "Accès refusé : réservé à l’organizer du projet" });
+    }
+
+    const deletedProject = deleteProject(req.params.id);
     res.status(200).json({ message: `Votre projet ${deletedProject.name} a été supprimé avec succès !`, project: deletedProject });
 };
+
 
 
 
