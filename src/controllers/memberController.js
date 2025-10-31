@@ -1,5 +1,4 @@
 const store = require('../data/memory.store.json');
-
 // Recherche le projet par id
 function findProject(projectId) {
   return store.projects.find(p => String(p.id) === String(projectId));
