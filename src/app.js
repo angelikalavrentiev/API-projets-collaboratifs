@@ -6,7 +6,6 @@ const path = require('path');
 const cookieParser = require("cookie-parser");
 const morgan = require('morgan');
 
-// const memberRouter = require('./routes/members.routes');
 const projetRouter = require('./routes/projects.routes');
 const memberRouter = require('./routes/members.routes');
 const authRouter = require('./routes/auth.routes');
@@ -23,7 +22,6 @@ app.use(cookieParser("my_secret"));
 app.use("/projects", projetRouter);
 app.use("/projects/:projectId/members", memberRouter);
 app.use("/", authRouter);
-// app.use("/member", memberRouter)
 
 
 app.listen(5000, () => {
