@@ -5,35 +5,20 @@ const { getAllProjects, getProjectById, getProjectsWithPagination, addProject, u
 
 // Lister tous les projets (avec filtres + pagination)
 const getProjects = (req, res) => {
-  const { q, role, page, size } = req.query;
-
-  // Si aucun paramètre de query, on renvoie tout
-  if (!q && !role && !page && !size) {
-    const projects = getAllProjects();
-
-    console.log('User:', normalize(req.user.normalizedUsername));
-    projects.forEach(p => 
-      console.log('Project', p.id, p.members.map(m => normalize(m.name)))
-    );
-
-    // --- Filtrage pour les membres ---
-    if (req.user && req.user.role.toLowerCase() === 'member') {
-      const normalizedUser = normalize(req.user.normalizedUsername);
-      return res.status(200).json(
-        projects.filter(p =>
-          (p.members || []).some(m => normalize(m.name) === normalizedUser)
-        )
-      );
+  try {
+    // Si aucun query param, on renvoie tout via le service
+    const { q, role, page, size } = req.query;
+    if (!q && !role && !page && !size) {
+      return getProjectsWithPagination(req, res);
     }
-
-    return res.status(200).json(projects);
+    
+    // Sinon, déléguer au service qui gère tout
+    getProjectsWithPagination(req, res);
+  } catch (err) {
+    console.error("Erreur getProjects:", err);
+    res.status(500).json({ message: "Erreur interne serveur" });
   }
-
-  // Sinon on délègue au service qui gère filtres + pagination
-  // On passe req.user pour filtrer les membres
-  getProjectsWithPagination(req, res);
 };
-
 
 // Récupérer un projet par son ID
 const getProject = (req, res) => {

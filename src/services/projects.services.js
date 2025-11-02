@@ -10,7 +10,7 @@ const data_file = path.join(__dirname, '..', 'data', 'memory.store.json');
 // Charger les projets depuis memory.store.json si le fichier existe
 // ---------------------- STOCKAGE EN MEMOIRE -------------------- //
 let projects = [];
-let users = []; // { normalizedUsername, userId, roles: ["Organizer", "Member"] }
+let users = []; // { normalizedUsername, userId, role: ["Organizer", "Member"] }
 
 // Normalisation : minuscule, point à la place d'espace
 const normalize = str => str?.trim().toLowerCase().replace(/\s+/g, '.');
@@ -55,10 +55,10 @@ try {
         }
     ];
     users = [
-        { normalizedUsername: "alice.smith", userId: 1, roles: ["Organizer"] },
-        { normalizedUsername: "marco.polo", userId: 2, roles: ["Organizer"] },
-        { normalizedUsername: "bob.jones", userId: 3, roles: ["Visitor"] },
-        { normalizedUsername: "john.doe", userId: 4, roles: ["Member"] }
+        { normalizedUsername: "alice.smith", userId: 1, role: ["Organizer"] },
+        { normalizedUsername: "marco.polo", userId: 2, role: ["Organizer"] },
+        { normalizedUsername: "bob.jones", userId: 3, role: ["Visitor"] },
+        { normalizedUsername: "john.doe", userId: 4, role: ["Member"] }
     ];
     saveProjectsToFile();
 }
@@ -71,11 +71,11 @@ const getOrCreateUser = (username, role) => {
         user = {
             normalizedUsername,
             userId: Date.now() + Math.floor(Math.random() * 1000),
-            roles: [role]
+            role: [role]
         };
         users.push(user);
-    } else if (!user.roles.includes(role)) {
-        user.roles.push(role);
+    } else if (!user.role.includes(role)) {
+        user.role.push(role);
     }
     saveProjectsToFile();
     return user;
@@ -133,6 +133,7 @@ const getProjectById = (id) => {
     return projects.find(project => project.id === idNumber);
 };
 
+
 // Lister les projets avec filtres et pagination
 const getProjectsWithPagination = (req, res) => {
   try {
@@ -143,7 +144,7 @@ const getProjectsWithPagination = (req, res) => {
     let projects = getAllProjects();
 
     // --- Filtrage selon rôle ---
-    if (user.roles.includes("Visitor")) {
+    if (user.role.includes("Visitor")) {
       // Visitor : voit tous les projets mais sans détails membres
       const total = projects.length;
       const start = (page - 1) * Number(size);
@@ -152,22 +153,22 @@ const getProjectsWithPagination = (req, res) => {
         id: p.id,
         name: p.name,
         organizer: p.organizer,
-        membersCount: p.members?.length || 0
+        membersCount: Array.isArray(p.members) ? p.members.length : 0
       }));
       return res.status(200).json({ projectData, page: Number(page), size: Number(size), total });
-    } else if (user.roles.includes("Member")) {
+    } else if (user.role.includes("Member")) {
       const normalizedUser = normalize(user.normalizedUsername);
       projects = projects.filter(p =>
-        (p.members || []).some(m => normalize(m.name) === normalizedUser)
+        Array.isArray(p.members) && p.members.some(m => normalize(m.name) === normalizedUser)
       );
       if (projects.length === 0) return res.status(200).json({ message: "Aucun projet trouvé pour ce membre", projectData: [] });
     }
     // Organizer voit tout => pas besoin de filtrer
 
     // --- Filtrage par q et role ---
-    if (q) projects = projects.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+    if (q) projects = projects.filter(p => String(p.name).toLowerCase().includes(String(q).toLowerCase()));
     if (role) projects = projects.filter(p =>
-      p.members?.some(m => m.role.toLowerCase() === role.toLowerCase())
+      Array.isArray(p.members) && p.members.some(m => m.role && m.role.toLowerCase() === String(role).toLowerCase())
     );
 
     // --- Pagination ---
@@ -180,12 +181,13 @@ const getProjectsWithPagination = (req, res) => {
       id: p.id,
       name: p.name,
       organizer: p.organizer,
-      membersCount: p.members?.length || 0
+      membersCount: Array.isArray(p.members) ? p.members.length : 0
     }));
 
     // --- Retour JSON ---
     res.status(200).json({ projectData, page: Number(page), size: Number(size), total });
   } catch (err) {
+    console.error("Erreur getProjectsWithPagination:", err);
     res.status(500).json({ message: "Erreur interne serveur" });
   }
 };

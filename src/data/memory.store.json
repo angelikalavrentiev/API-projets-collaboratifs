@@ -47,28 +47,28 @@
     {
       "normalizedUsername": "alice.smith",
       "userId": 1,
-      "roles": [
+      "role": [
         "Organizer"
       ]
     },
     {
       "normalizedUsername": "marco.polo",
       "userId": 2,
-      "roles": [
+      "role": [
         "Organizer"
       ]
     },
     {
       "normalizedUsername": "bob.jones",
       "userId": 3,
-      "roles": [
+      "role": [
         "Visitor"
       ]
     },
     {
       "normalizedUsername": "john.doe",
       "userId": 4,
-      "roles": [
+      "role": [
         "Member"
       ]
     }
