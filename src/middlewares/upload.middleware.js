@@ -52,7 +52,7 @@ exports.renameUploadedSpecFile = (req, res, next) => {
     const cleanName = previousName.slice(0, 2).join("-");
 
     // Nom final du fichier
-    const specFile = `${cleanName}-spec.pdf`;
+    const specFile = `${cleanName}-${Date.now()}-spec.pdf`;
 
     // Renommer le fichier dans le dossier uploads
     const oldPath = path.join(UPLOAD_DIR, uploadedFile.filename);

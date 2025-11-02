@@ -3,20 +3,24 @@ const { generateToken, verifyJwtToken } = require("../utils/jwt");
 
 exports.login = async (req, res) => {
 
-    const { name, role } = req.body; // role = "Organizer" ou "Member"
-    if (!name || !role) {
-        return res.status(400).json({ message: "Le champ 'name' et 'role' sont requis" });
+    const { username, role } = req.body; // role = "Organizer" ou "Member"
+    if (!username || !role) {
+        return res.status(400).json({ message: "Le champ 'username' et 'role' sont requis" });
     }
-    const token = generateToken({ name, role }, "1h");
+
+    // On normalise pour éviter les conflits : minuscules et remplacer espaces par un point
+    const normalizedUsername = username.trim().toLowerCase().replace(/\s+/g, '.');
+
+    const token = generateToken({ normalizedUsername, role }, "1h");
 
     res.cookie("access_token", token, {
         httpOnly: true,
         sameSite: "lax",
-        maxAge: 60 * 1000, 
+        maxAge:60 * 60 * 1000, 
         path: "/"
     })
 
-    res.status(200).json({ message: "Vous êtes bien authentifié", token, name, role })
+    res.status(200).json({ message: "Vous êtes bien authentifié", token, normalizedUsername, role })
 
 }
 
@@ -39,7 +43,7 @@ exports.verifyToken = async (req, res) => {
     return res.status(401).json({ message: "Token invalide ou expiré" });
   }
 
-  res.status(200).json({ valid: true });
+  res.status(200).json({ valid: true, user: decoded });
 
 }
 

@@ -6,8 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "seed": "node src/seed/courses.seed.js"
+    "dev": "nodemon src/app.js"
   },
   "keywords": [],
   "author": "",

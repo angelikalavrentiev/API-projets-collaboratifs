@@ -1,67 +1,76 @@
-[
-  {
-    "id": 1,
-    "name": "Neptune CRM Revamp",
-    "description": "Refonte front + API",
-    "organizer": "Alice Smith",
-    "specFile": "neptune-crm-spec.pdf",
-    "members": [
-      {
-        "id": 101,
-        "name": "John Doe",
-        "role": "Developer",
-        "projectId": 1
-      },
-      {
-        "id": 102,
-        "name": "Nadia Ben",
-        "role": "QA",
-        "projectId": 1
-      },
-      {
-        "id": 103,
-        "name": "Léo Tran",
-        "role": "ProductOwner",
-        "projectId": 1
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "name": "Atlas Mobile v2",
-    "description": "Refonte UX, offline-first",
-    "organizer": "Marco Polo",
-    "specFile": "atlas-mobile-spec.pdf",
-    "members": [
-      {
-        "id": 104,
-        "name": "Sara Kim",
-        "role": "Designer",
-        "projectId": 2
-      }
-    ]
-  },
-  {
-    "id": 3,
-    "name": "my project",
-    "description": "",
-    "organizer": "Alice Smith",
-    "specFile": "my-project-spec.pdf",
-    "members": []
-  },
-  {
-    "id": 4,
-    "name": "my project second",
-    "description": "",
-    "organizer": "John Doe",
-    "specFile": "my-project-spec.pdf",
-    "members": [
-      {
-        "id": 105,
-        "name": "Test User 2",
-        "role": "ProductOwner",
-        "projectId": 4
-      }
-    ]
-  }
-]
+{
+  "projects": [
+    {
+      "id": 1,
+      "name": "Neptune CRM Revamp",
+      "description": "Refonte front + API",
+      "organizer": "alice.smith",
+      "specFile": "neptune-crm-spec.pdf",
+      "members": [
+        {
+          "id": 101,
+          "name": "John Doe",
+          "role": "Developer",
+          "projectId": 1
+        },
+        {
+          "id": 102,
+          "name": "Nadia Ben",
+          "role": "QA",
+          "projectId": 1
+        },
+        {
+          "id": 103,
+          "name": "Léo Tran",
+          "role": "ProductOwner",
+          "projectId": 1
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Atlas Mobile v2",
+      "description": "Refonte UX, offline-first",
+      "organizer": "marco.polo",
+      "specFile": "atlas-mobile-spec.pdf",
+      "members": [
+        {
+          "id": 201,
+          "name": "Sara Kim",
+          "role": "Designer",
+          "projectId": 2
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "normalizedUsername": "alice.smith",
+      "userId": 1,
+      "roles": [
+        "Organizer"
+      ]
+    },
+    {
+      "normalizedUsername": "marco.polo",
+      "userId": 2,
+      "roles": [
+        "Organizer"
+      ]
+    },
+    {
+      "normalizedUsername": "bob.jones",
+      "userId": 3,
+      "roles": [
+        "Visitor"
+      ]
+    },
+    {
+      "normalizedUsername": "john.doe",
+      "userId": 4,
+      "roles": [
+        "Member"
+      ]
+    }
+  ]
+}

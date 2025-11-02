@@ -1,94 +1,117 @@
 // Importer le service pour acceder aux fonctions CRUD
-const { getAllProjects, getProjectById,getProjectsWithPagination, addProject, updateProject, deleteProject } = require("../services/projects.services");
+const { getAllProjects, getProjectById, getProjectsWithPagination, addProject, updateProject, deleteProject, validateProjects, normalize } = require("../services/projects.services");
 
 // ----------------- Controller pour gérer les projets(CRUD) ---------------//
+
 // Lister tous les projets (avec filtres + pagination)
 const getProjects = (req, res) => {
-  // Si aucun paramètre de query, on renvoie tout
   const { q, role, page, size } = req.query;
+
+  // Si aucun paramètre de query, on renvoie tout
   if (!q && !role && !page && !size) {
     const projects = getAllProjects();
+
+    console.log('User:', normalize(req.user.normalizedUsername));
+    projects.forEach(p => 
+      console.log('Project', p.id, p.members.map(m => normalize(m.name)))
+    );
+
+    // --- Filtrage pour les membres ---
+    if (req.user && req.user.role.toLowerCase() === 'member') {
+      const normalizedUser = normalize(req.user.normalizedUsername);
+      return res.status(200).json(
+        projects.filter(p =>
+          (p.members || []).some(m => normalize(m.name) === normalizedUser)
+        )
+      );
+    }
+
     return res.status(200).json(projects);
   }
 
   // Sinon on délègue au service qui gère filtres + pagination
+  // On passe req.user pour filtrer les membres
   getProjectsWithPagination(req, res);
 };
 
 
 // Récupérer un projet par son ID
 const getProject = (req, res) => {
-
-    const project = getProjectById(req.params.id);
-    if(!project) return res.status(404).json({message : "Projet non trouvé"});
-    res.status(200).json(project);
+  const project = getProjectById(req.params.id);
+  if(!project) return res.status(404).json({message : "Projet non trouvé"});
+  res.status(200).json(project);
 };
 
+
 // Ajouter un projet
-const createProjet = (req, res) => {
+const createProject = (req, res) => {
+  try {
+    const { name, description } = req.body;
+    const organizer = req.user.normalizedUsername; // organizer = user connecté
+    const uploadedFile = req.file;
 
-    try {
-        const { name, description, organizer } = req.body;
+    // Construire l'objet projet même si certains champs sont manquants
+    const projectData = {
+      name: name,                  // vide si non fourni
+      description: description,
+      organizer,
+      specFile: uploadedFile ? uploadedFile.filename : "" // vide si aucun fichier
+    };
 
-        const uploadedFile = req.file; // récupère le fichier uploadé
-        if(!uploadedFile) return res.status(400).json({ message: "Un fichier PDF est requis" });
+    // Validation complète via validateProjects
+    const errors = validateProjects(projectData, req.user);
+    if (errors.length) return res.status(400).json({ errors });
 
-        // Nom déjà nettoyé par le middleware
-        const specFile = uploadedFile.filename; 
+    // Création du projet
+    const newProject = addProject(projectData, req.user);
 
-        // ON ajoute le projet via le service
-        const newProject = addProject({ name, description, organizer, specFile });
-
-        return res.status(201).json({ message: `Votre projet ${newProject.name} a été ajouté avec succès !`, project: newProject });
-    } 
-    catch (err) {
-        return res.status(400).json({ message: err.message });
+    return res.status(201).json({
+      message: `Votre projet ${newProject.name} a été ajouté avec succès !`,
+      project: newProject
+    });
+  } catch (err) {
+    // Gestion des erreurs existantes ou conflits
+    if (err.message.includes("existe déjà")) {
+      return res.status(400).json({ message: err.message });
     }
+
+    console.error(err);
+    return res.status(500).json({ message: 'Erreur interne serveur' });
+  }
 };
 
 // Modifier un projet
 const editProject = (req, res) => {
-    try {
-        const project = getProjectById(req.params.id);
-        const { name, description, organizer } = req.body;
-        
-        // On récupère le fichier uploadé si présent
-        const uploadedFile = req.file;
+  try {
+    const project = getProjectById(req.params.id);
+    if (!project) return res.status(404).json({ message: "Projet introuvable" });
 
-        // On ne modifie specFile que si un fichier a été uploadé
-        let specFile;
-        if (uploadedFile) specFile = uploadedFile.filename; 
+    const { name, description } = req.body;
+    const uploadedFile = req.file;
 
-        // Vérification de l'organizer
-        if (req.user.role === "Organizer" && req.user.name !== project.organizer) {
-            return res.status(403).json({ message: "Accès refusé : vous n'êtes pas l'organizer de ce projet" });
-        }
-    
-        // Mise à jour via le service
-        const updatedData = updateProject(req.params.id, { name, description, organizer, specFile });
-        res.status(200).json({ message: `Votre projet ${updatedData.name} a été modifié avec succès !`, project: updatedData });
-    } 
-    catch (err) {
-        return res.status(400).json({ message: err.message });
-    }
+    const updatedData = updateProject(req.params.id, { 
+        name, 
+        description, 
+        specFile: uploadedFile ? uploadedFile.filename : undefined // si aucun fichier, ne change pas
+    });
+
+    res.status(200).json({ message: `Votre projet ${updatedData.name} a été modifié avec succès !`, project: updatedData });
+  } 
+  catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
 };
 
 // Supprimer un projet
 const removeProject = (req, res) => {
-    const project = getProjectById(req.params.id);
-    if (!project) return res.status(404).json({ message: "Projet non trouvé" });
+  const project = getProjectById(req.params.id);
+  if (!project) return res.status(404).json({ message: "Projet non trouvé" });
 
-    // Seul l'organizer spécifique du projet peut supprimer
-    if (req.user.name !== project.organizer) {
-        return res.status(403).json({ message: "Accès refusé : réservé à l’organizer du projet" });
-    }
-
-    const deletedProject = deleteProject(req.params.id);
-    res.status(200).json({ message: `Votre projet ${deletedProject.name} a été supprimé avec succès !`, project: deletedProject });
+  // On supprime le projet
+  deleteProject(req.params.id);
+ res.status(200).json({ message: "Votre projet a été supprimé avec succès" });
 };
 
 
-
-
-// Export
-module.exports = { getProjects, getProject, createProjet, editProject, removeProject };
+//------------------------ Export -----------------------//
+module.exports = { getProjects, getProject, createProject, editProject, removeProject };
