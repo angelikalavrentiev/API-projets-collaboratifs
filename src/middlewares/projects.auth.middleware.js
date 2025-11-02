@@ -3,7 +3,6 @@ const { getProjectById, normalize } = require("../services/projects.services");
 // -------------------------- Middleware pour vérifier l'organizer -------------------------- //
 // Vérifie que l'utilisateur est l'organizer du projet (modification/suppression)
 exports.isProjectOrganizer = (req, res, next) => {
-    // Récupère le projet depuis le service via l'ID dans params
     const project = getProjectById(req.params.id || req.params.projectId);
     if (!project) return res.status(404).json({ message: "Projet non trouvé" });
 
@@ -11,10 +10,10 @@ exports.isProjectOrganizer = (req, res, next) => {
 
     // Normalisation : role en minuscules + username en minuscules
     const usernameNormalized = normalizedUsername.toLowerCase();
-    const roles = Array.isArray(role) ? role.map(r => r.toLowerCase()) : [role.toLowerCase()];
+    const roleNormalized = role.toLowerCase();
 
-    // Vérifie que l'utilisateur a bien le rôle 'Organizer' ET qu'il est l'organizer du projet
-    const isOrganizer = roles.includes("organizer") && project.organizer.toLowerCase() === usernameNormalized;
+    // Vérifie que l'utilisateur a bien le rôle 'organizer' ET qu'il est l'organizer du projet
+    const isOrganizer = roleNormalized === "organizer" && project.organizer.toLowerCase() === usernameNormalized;
 
     // Si ce n'est pas l'organizer, refuse l'accès
     if (!isOrganizer) {
@@ -26,8 +25,7 @@ exports.isProjectOrganizer = (req, res, next) => {
     next();
 };
 
-
-
+// -------------------------- Middleware pour accès projet (Visitor, Member, Organizer) -------------------------- //
 // Visitor a accès lecture seule sans détails des membres
 exports.canAccessProject = (req, res, next) => {
     const projectId = req.params.id || req.params.projectId;
@@ -37,12 +35,12 @@ exports.canAccessProject = (req, res, next) => {
 
     const { role, normalizedUsername } = req.user;
     const usernameNormalized = normalizedUsername.toLowerCase();
-    const roles = Array.isArray(role) ? role.map(r => r.toLowerCase()) : [role.toLowerCase()];
+    const roleNormalized = role.toLowerCase();
 
     // Vérifie les rôles
-    const isOrganizer = roles.includes("organizer") && project.organizer.toLowerCase() === usernameNormalized;
-    const isMember = roles.includes("member") && (project.members || []).some(m => normalize(m.name) === usernameNormalized);
-    const isVisitor = roles.includes("visitor");
+    const isOrganizer = roleNormalized === "organizer" && project.organizer.toLowerCase() === usernameNormalized;
+    const isMember = roleNormalized === "member" && (project.members || []).some(m => normalize(m.name) === usernameNormalized);
+    const isVisitor = roleNormalized === "visitor";
 
     // Si aucune condition n'est remplie, accès refusé
     if (!isOrganizer && !isMember && !isVisitor) {

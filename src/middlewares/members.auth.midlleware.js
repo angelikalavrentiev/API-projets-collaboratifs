@@ -34,11 +34,11 @@ exports.canViewProjectMembers = (req, res, next) => {
     const roleNormalized = role.toLowerCase();
     const usernameNormalized = normalizedUsername.toLowerCase();
 
-    // Organizer = accès
+    // Organizer = accès complet
     const isOrganizer = roleNormalized === "organizer" && project.organizer.toLowerCase() === usernameNormalized;
 
     // Member = accès si membre du projet
-    const isMember = (project.members || []).some(m => normalize(m.name) === usernameNormalized);
+    const isMember = roleNormalized === "member" && (project.members || []).some(m => normalize(m.name) === usernameNormalized);
 
     if (!isOrganizer && !isMember) {
         return res.status(403).json({ message: "Accès interdit : seuls les membres ou l’organizer peuvent voir la liste" });
