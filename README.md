@@ -7,7 +7,7 @@
 
 # Installer les dépendances
  npm install
- npm i express multer jsonwebtoken morgan nodemon
+ npm i express multer jsonwebtoken morgan cookie-parser nodemon dotenv
 
 # Lancer le serveur
     node app.js
@@ -25,6 +25,8 @@
 ├── middlewares/
 │   ├── auth.middleware.js      # Vérification du token JWT
 │   ├── upload.middleware.js    # Vérification & gestion des fichiers PDF
+|   ├── members.auth.middleware.js   # Vérification auth members
+│   ├── projects.auth.middleware.js  # Vérification auth projets
 │   └── member.middleware.js    # Vérification des champs (nom, rôle, etc.)
 ├── routes/
 │   ├── auth.routes.js          # Définition de toutes les routes auth
@@ -102,4 +104,31 @@ Authorization: Bearer <token>
 
 # Tests PostMan
 
-![Test login](/images/image.png)
+- Auth
+![Test login](/images/auth-login.png)
+![Test logout](/images/auth-logout-res.png)
+![Test login role](/images/auth-login-data.png)
+![Test login role member](/images/auth-login-MEMBER-res.png)
+![erreur API](/images/API-errors.png)
+![Test token vérifié](/images/auth-verifyToken.png)
+
+- Members
+![Test delete org](/images/DELETE-member-byOrganizer.png)
+![Test delete nonorg](/images/DELETE-member-byNONOrganizer.png)
+![Test members](/images/GET-members.png)
+![Test members hors projet](/images/GET-membersBYNONMEMBER.png)
+![Test members du projet](/images/GETMEMBER-byProjet-Member.png)
+![Test member by org](/images/PUT-memberByProjetOrganizer-data.png)
+![Test member modif by org](/images/PUT-BYMEMBER.png)
+![Test member exist](/images/if-member-exists.png)
+![Test créé member](/images/POST-memberByNONOrganizer.png)
+
+- Projets
+![Test delete org](/images/DELETE-projectbyOrganizer.png)
+![Test delete nonorg](/images/DELETE-projectbyNONOrganizer.png)
+![Test projet non member](/images/GET-project-BYNONMEMBER.png)
+![Test projet member](/images/GET-project-if-ISmember.png)
+![Test projects](/images/GET-projects.png)
+![Test projet exist](/images/if-project-exists-already.png)
+![Test project](/images/POST-project-data.png)
+![Test project by non member](/images/PUT-projectByNONOrganizer.png)
